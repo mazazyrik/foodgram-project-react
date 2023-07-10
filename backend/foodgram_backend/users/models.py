@@ -10,7 +10,7 @@ class User(AbstractUser):
 
     email = models.EmailField(
         unique=True,
-        verbose_name='email'
+        verbose_name='email',
     )
     first_name = models.CharField(
         max_length=150,
@@ -40,11 +40,13 @@ class Follow(models.Model):
         User,
         on_delete=models.CASCADE,
         verbose_name='follower',
+        related_name='follower'
     )
     author = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
         verbose_name='following',
+        related_name='following'
     )
 
     class Meta:

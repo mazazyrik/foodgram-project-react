@@ -1,4 +1,3 @@
-from django.core.validators import validate_image_file_extension
 from django.db import models
 from colorfield.fields import ColorField
 
@@ -122,3 +121,24 @@ class RecipeIngredient(models.Model):
         return (
             f'Ingredient {self.ingredient_id} in recipe {self.recipe_id}'
         )
+
+
+class ShoppingCart(models.Model):
+    user = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name='shopping_cart',
+        verbose_name='user'
+    )
+    recipe = models.ForeignKey(
+        Recipe, on_delete=models.CASCADE, related_name='shopping_cart',
+        verbose_name='recipe'
+    )
+
+    class Meta:
+        verbose_name = 'shopping cart'
+        verbose_name_plural = 'shopping carts'
+        ordering = ('pk', )
+        constraints = [
+            models.UniqueConstraint(
+                fields=['user', 'recipe'], name='shop_user_recipe_unique'
+            ),
+        ]
