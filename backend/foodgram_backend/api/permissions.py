@@ -2,7 +2,6 @@ from rest_framework import permissions
 
 
 class IsAdminModeratorOwnerOrReadOnly(permissions.IsAuthenticatedOrReadOnly):
-    message = 'You do not have sufficient rights to complete this request.'
 
     def has_object_permission(self, request, view, obj):
         return (
