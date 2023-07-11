@@ -1,6 +1,11 @@
 from rest_framework import viewsets
 from recipes.models import Tag, Ingredient, Recipe, ShoppingCart
-from .serializers import TagSerializer, IngredientSerializer, RecipeSerializer, ShoppingCartSerializer
+from .serializers import (
+    TagSerializer,
+    IngredientSerializer,
+    RecipeSerializer,
+    ShoppingCartSerializer,
+)
 from django_filters import rest_framework as filters
 from .filters import IngredientFilter, RecipeFilter
 from api.permissions import IsAdminModeratorOwnerOrReadOnly
