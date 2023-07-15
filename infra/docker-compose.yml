@@ -33,8 +33,6 @@ services:
       dockerfile: Dockerfile
     volumes:
       - ../frontend/:/app/result_build/
-    depends_on:
-      - back
 
   nginx:
     container_name: proxy
@@ -48,4 +46,4 @@ services:
       - foodgram_static:/var/html/backend_static/
       - foodgram_media:/var/html/media/
     depends_on:
-      - front
+      - back
