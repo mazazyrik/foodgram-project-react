@@ -1,12 +1,38 @@
 version: '3.3'
-services:
 
-  frontend:
+volumes:
+  foodgram_database:
+  foodgram_static:
+  foodgram_media:
+
+services:
+  database:
+    image: postgres:15.1-alpine
+    volumes:
+      - foodgram_database:/var/lib/postgresql/data/
+    env_file:
+      - .env
+
+  foodgram_backend:
+    image: mazazyrik/foodgram_back:latest
+    restart: always
+    volumes:
+      - foodgram_static:/foodgram/backend_static/
+      - foodgram_media:/foodgram/media/
+    depends_on:
+      - database
+    env_file:
+      - .env
+  
+  foodgram_frontend:
     build:
       context: ../frontend
       dockerfile: Dockerfile
     volumes:
       - ../frontend/:/app/result_build/
+    depends_on:
+      - foodgram_backend
+
   nginx:
     image: nginx:1.19.3
     ports:
@@ -15,3 +41,7 @@ services:
       - ./nginx.conf:/etc/nginx/conf.d/default.conf
       - ../frontend/build:/usr/share/nginx/html/
       - ../docs/:/usr/share/nginx/html/api/docs/
+      - foodgram_static:/var/html/backend_static/
+      - foodgram_media:/var/html/media/
+    depends_on:
+      - foodgram_frontend

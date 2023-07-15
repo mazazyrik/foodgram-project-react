@@ -1,15 +1,16 @@
 FROM python:3.9
 
-WORKDIR /app
+RUN apt-get update
+RUN apt-get install -y wget
+RUN apt-get install -y xz-utils
+RUN apt-get install -y libfontconfig1 libxrender1 libxext6
+RUN wget https://github.com/wkhtmltopdf/wkhtmltopdf/releases/download/0.12.4/wkhtmltox-0.12.4_linux-generic-amd64.tar.xz
+RUN tar xvJf wkhtmltox-0.12.4_linux-generic-amd64.tar.xz
+RUN cp wkhtmltox/bin/wkhtmlto* /usr/bin/
 
-RUN pip install gunicorn==20.1.0
+WORKDIR /foodgram_backend
+COPY ./ ./
+RUN python3 -m pip install --upgrade pip --no-cache-dir
+RUN pip3 install -r requirements.txt
 
-RUN pip install psycopg2-binary
-
-COPY requirements.txt .
-
-RUN pip install -r requirements.txt --no-cache-dir
-
-COPY . .
-
-CMD ["gunicorn", "foodgram_backend.wsgi:application", "--bind", "0:8000" ]
+CMD ["gunicorn", "foodgram_backend.wsgi:application", "--bind", "0:8000"]
