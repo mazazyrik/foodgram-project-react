@@ -99,7 +99,65 @@ USE_L10N = True
 
 USE_TZ = True
 
-STATIC_URL = '/static/'
-
-
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+AUTH_USER_MODEL = 'users.User'
+
+STATIC_URL = '/backend_static/'
+
+STATIC_ROOT = BASE_DIR.joinpath('backend_static')
+
+MEDIA_URL = '/media/'
+
+MEDIA_ROOT = BASE_DIR.joinpath('media')
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'console': {
+            'format': '%(asctime)s | %(levelname)s | %(message)s'
+        },
+    },
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+            'formatter': 'console'
+        },
+    },
+    'loggers': {
+        'recipes.management.commands.add_ingredients': {
+            'level': 'INFO',
+            'handlers': ('console', )
+        }
+    }
+}
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.TokenAuthentication',
+    ),
+
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAuthenticatedOrReadOnly',
+    ),
+
+    'DEFAULT_PAGINATION_CLASS': (
+        'api.pagination.CustomPagination'
+    ),
+
+    'PAGE_SIZE': 6,
+}
+
+DJOSER = {
+    'SERIALIZERS': {
+        'user_create': 'api.serializers.CustomUserCreateSerializer',
+        'user': 'api.serializers.CustomUserSerializer',
+        'current_user': 'api.serializers.CustomUserSerializer',
+    },
+    'PERMISSIONS': {
+        'user': ['rest_framework.permissions.IsAuthenticatedOrReadOnly'],
+        'user_list': ['rest_framework.permissions.IsAuthenticatedOrReadOnly'],
+    },
+    'HIDE_USERS': False,
+}
