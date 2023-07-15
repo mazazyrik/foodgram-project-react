@@ -1,4 +1,4 @@
-version: '3.3'
+version: "3.3"
 
 volumes:
   foodgram_database:
@@ -7,14 +7,16 @@ volumes:
 
 services:
   database:
+    container_name: database
     image: postgres:15.1-alpine
     volumes:
       - foodgram_database:/var/lib/postgresql/data/
     env_file:
-      - .env
+      - ./.env
 
-  foodgram_backend:
-    image: mazazyrik/foodgram_back:latest
+  back:
+    container_name: back
+    build: ../backend
     restart: always
     volumes:
       - foodgram_static:/foodgram/backend_static/
@@ -22,18 +24,20 @@ services:
     depends_on:
       - database
     env_file:
-      - .env
-  
-  foodgram_frontend:
+      - ./.env
+
+  front:
+    container_name: front
     build:
       context: ../frontend
       dockerfile: Dockerfile
     volumes:
       - ../frontend/:/app/result_build/
     depends_on:
-      - foodgram_backend
+      - back
 
   nginx:
+    container_name: proxy
     image: nginx:1.19.3
     ports:
       - "80:80"
@@ -44,4 +48,4 @@ services:
       - foodgram_static:/var/html/backend_static/
       - foodgram_media:/var/html/media/
     depends_on:
-      - foodgram_frontend
+      - front
