@@ -40,13 +40,13 @@ class Follow(models.Model):
         User,
         on_delete=models.CASCADE,
         verbose_name='follower',
-        related_name='follower'
+        related_name='follower_users'
     )
     author = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
         verbose_name='following',
-        related_name='following'
+        related_name='following_users'
     )
 
     class Meta:

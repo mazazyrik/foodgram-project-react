@@ -1,11 +1,11 @@
 from rest_framework import serializers
-from recipes.models import (
-    Tag, Ingredient, Recipe, RecipeIngredient, ShoppingCart
-)
+from recipes.models import (Favorite, Ingredient, Recipe, RecipeIngredient,
+                            ShoppingCart, Subscription, Tag)
 from drf_extra_fields.fields import Base64ImageField
 from users.models import User
 from djoser.serializers import UserCreateSerializer, UserSerializer
 from rest_framework.validators import UniqueTogetherValidator
+from django.contrib.auth.password_validation import validate_password
 
 
 class AbstractUserSerializer(UserSerializer):
@@ -34,7 +34,7 @@ class AbstractUserCreateSerializer(UserCreateSerializer):
         )
 
 
-class TagSerializer(serializers):
+class TagSerializer(serializers.ModelSerializer):
     class Meta:
         model = Tag
         fields = [
@@ -42,7 +42,7 @@ class TagSerializer(serializers):
         ]
 
 
-class IngredientSerializer(serializers):
+class IngredientSerializer(serializers.ModelSerializer):
     class Meta:
         model = Ingredient
         fields = [
@@ -50,7 +50,7 @@ class IngredientSerializer(serializers):
         ]
 
 
-class RecipeIngredientSerializer(serializers):
+class RecipeIngredientSerializer(serializers.ModelSerializer):
     id = serializers.PrimaryKeyRelatedField(queryset=Ingredient.objects.all())
     amount = serializers.IntegerField(write_only=True)
 
@@ -64,7 +64,7 @@ class RecipeIngredientSerializer(serializers):
         return amount
 
 
-class RecipeSerializer(serializers):
+class RecipeSerializer(serializers.ModelSerializer):
     ingredients = RecipeIngredientSerializer(
         many=True,
     )
@@ -165,6 +165,63 @@ class RecipeSerializer(serializers):
         return instance
 
 
+class FavoriteSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Favorite
+        fields = ('user', 'recipe', )
+        validators = (
+            UniqueTogetherValidator(
+                queryset=Favorite.objects.all(),
+                fields=('user', 'recipe'),
+                message='Recipe already exists in your favorites.',
+            ),
+        )
+
+
+class CommonRecipeSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Recipe
+        fields = ('id', 'name', 'image', 'cooking_time', )
+
+
+class AuthorSerializer(UserSerializer):
+    is_subscribed = serializers.SerializerMethodField()
+    recipes = serializers.SerializerMethodField()
+
+    class Meta:
+        model = User
+        fields = [
+            'email', 'id', 'username', 'first_name', 'last_name',
+            'is_subscribed', 'recipes'
+        ]
+        extra_kwargs = {}
+        for field in fields:
+            extra_kwargs[field] = {'required': True}
+
+    def get_recipes(self, obj):
+        recipes_count = self.context.get('recipes_count')
+        recipes = obj.recipes.all()[:recipes_count]
+        return RecipeSerializer(recipes, many=True).data
+
+
+class ChangePasswordSerializer(serializers.Serializer):
+    current_password = serializers.CharField(required=True,)
+    new_password = serializers.CharField(required=True,)
+
+    def validate_new_password(self, value):
+        validate_password(value)
+        return value
+
+    def validate_current_password(self, value):
+        user = self.context.get('request').user
+        if not user.check_password(value):
+            raise serializers.ValidationError(
+                'Wrong old password.'
+            )
+
+
 class ShoppingCartSerializer(serializers.ModelSerializer):
 
     class Meta:
@@ -177,3 +234,50 @@ class ShoppingCartSerializer(serializers.ModelSerializer):
                 message='Recipe already exists in your shopping cart.',
             ),
         )
+
+
+class SubscriptionSerializer(AbstractUserCreateSerializer):
+    recipes = serializers.SerializerMethodField()
+    recipes_count = serializers.SerializerMethodField()
+
+    class Meta:
+        model = User
+        fields = (
+            'email', 'id', 'username', 'first_name', 'last_name',
+            'is_subscribed', 'recipes', 'recipes_count'
+        )
+
+    def get_recipes(self, obj):
+        recipes = obj.recipes.all()
+        recipes_limit = (
+            self.context.get('request').query_params.get('recipes_limit')
+        )
+        if recipes_limit and recipes_limit.isdigit():
+            recipes = recipes[:int(recipes_limit)]
+
+        return CommonRecipeSerializer(recipes, many=True).data
+
+    def get_recipes_count(self, obj):
+        return obj.recipes.count()
+
+
+class SubscribeSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Subscription
+        fields = ('user', 'author', )
+        validators = (
+            UniqueTogetherValidator(
+                queryset=Subscription.objects.all(),
+                fields=('user', 'author'),
+                message='You are already subscribed this author.',
+            ),
+        )
+
+    def validate_author(self, value):
+        request = self.context.get('request')
+        if request.user == value:
+            raise serializers.ValidationError(
+                'You are not able to subscribe to yourself.'
+            )
+        return value

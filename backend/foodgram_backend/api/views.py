@@ -5,24 +5,132 @@ from .serializers import (
     IngredientSerializer,
     RecipeSerializer,
     ShoppingCartSerializer,
+    AbstractUserSerializer,
+    ChangePasswordSerializer,
+    AuthorSerializer,
+    SubscribeSerializer
 )
 from django_filters import rest_framework as filters
 from .filters import IngredientFilter, RecipeFilter
 from api.permissions import IsAdminModeratorOwnerOrReadOnly
 from django.db.models import Sum
 from django.http import HttpResponse
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from django.template import loader
 from pdfkit import from_string
 from rest_framework.decorators import action
+from users.models import User
+from rest_framework.response import Response
+from django.shortcuts import get_object_or_404
+from rest_framework import mixins
 
 
 class CustomGetViewSet(
-    viewsets.ListModelMixin,
-    viewsets.RetrieveModelMixin,
+    mixins.ListModelMixin,
+    mixins.RetrieveModelMixin,
     viewsets.GenericViewSet
 ):
     pass
+
+
+class UsersViewSet(CustomGetViewSet, mixins.CreateModelMixin):
+    queryset = User.objects.all()
+    serializer_class = AbstractUserSerializer
+    permission_classes = [AllowAny, ]
+
+    @action(
+        detail=False,
+        methods=[
+            'get',
+        ],
+        permission_classes=[IsAuthenticated, ],
+        url_path='me',
+    )
+    def get_me(self, request):
+        data = AbstractUserSerializer(
+            request.user,
+            context={
+                'request': request
+            }
+        ).data
+        return Response(
+            data, status=200
+        )
+
+    @action(
+        detail=False,
+        methods=[
+            'POST',
+        ],
+        permission_classes=[IsAuthenticated, ],
+        url_path='set_password',
+    )
+    def set_password(self, request):
+        user = request.user
+        serializer = ChangePasswordSerializer(
+            data=request.data,
+            context={'request': request}
+        )
+
+        serializer.is_valid(raise_exception=True)
+        user.set_password(serializer.validated_data.get('new_password'))
+        user.save()
+        return Response(status=204)
+
+    @action(
+        detail=True,
+        methods=['POST', ],
+        permission_classes=[IsAuthenticated, ],
+        url_path='subscribe',
+    )
+    def subscribe(self, request, pk):
+        author = get_object_or_404(User, id=pk)
+        data = {
+            'author': pk,
+            'follower': request.user.id,
+        }
+        serializer = SubscribeSerializer(
+            data=data, context={'request': request, }
+        )
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        recipes_limit = self.request.query_params.get('recipes_limit', 99999)
+
+        return Response(
+            AuthorSerializer(
+                author, context={
+                    'request': request,
+                    'recipes_limit': recipes_limit
+                }
+            ).data
+        )
+
+    @action(
+        detail=False,
+        methods=['GET', ],
+        url_path='subscriptions',
+    )
+    def subscriptions(self, request):
+        follows = request.user.follows.all()
+        ids = follows.values_list('author_id', flat=True)
+        queryset = User.objects.filter(id__in=ids)
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = AuthorSerializer(
+                page, many=True, context={
+                    'request': request
+                }
+            )
+            return self.get_paginated_response(serializer.data)
+
+        serializer = AuthorSerializer(
+            queryset, many=True, context={
+                'request': request
+            }
+        )
+
+        serializer.is_valid(raise_exception=True)
+        return Response(serializer.data)
 
 
 class TagViewSet(CustomGetViewSet):
@@ -68,8 +176,8 @@ class RecipeViewSet(viewsets.ModelViewSet):
         return response
 
 
-class ShoppingCartViewSet(viewsets.CreateModelMixin,
-                          viewsets.DestroyModelMixin,
+class ShoppingCartViewSet(mixins.CreateModelMixin,
+                          mixins.DestroyModelMixin,
                           viewsets.GenericViewSet):
     queryset = ShoppingCart.objects.all()
     serializer_class = ShoppingCartSerializer
