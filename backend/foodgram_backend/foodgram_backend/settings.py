@@ -119,28 +119,6 @@ MEDIA_URL = '/media/'
 
 MEDIA_ROOT = BASE_DIR.joinpath('media')
 
-LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': False,
-    'formatters': {
-        'console': {
-            'format': '%(asctime)s | %(levelname)s | %(message)s'
-        },
-    },
-    'handlers': {
-        'console': {
-            'class': 'logging.StreamHandler',
-            'formatter': 'console'
-        },
-    },
-    'loggers': {
-        'recipes.management.commands.add_ingredients': {
-            'level': 'INFO',
-            'handlers': ('console', )
-        }
-    }
-}
-
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework.authentication.TokenAuthentication',

@@ -8,7 +8,7 @@ from .serializers import (
     AbstractUserSerializer,
     ChangePasswordSerializer,
     AuthorSerializer,
-    SubscribeSerializer
+    SubscribeSerializer,
 )
 from django_filters import rest_framework as filters
 from .filters import IngredientFilter, RecipeFilter

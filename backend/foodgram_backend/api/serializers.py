@@ -3,35 +3,46 @@ from recipes.models import (Favorite, Ingredient, Recipe, RecipeIngredient,
                             ShoppingCart, Subscription, Tag)
 from drf_extra_fields.fields import Base64ImageField
 from users.models import User
-from djoser.serializers import UserCreateSerializer, UserSerializer
+from djoser.serializers import UserSerializer
 from rest_framework.validators import UniqueTogetherValidator
 from django.contrib.auth.password_validation import validate_password
 
 
-class AbstractUserSerializer(UserSerializer):
+class AbstractUserSerializer(serializers.ModelSerializer):
     is_subscribed = serializers.SerializerMethodField()
+    password = serializers.CharField(write_only=True)
 
-    class Meta(UserSerializer.Meta):
+    class Meta:
         model = User
-        fields = (
+        fields = [
             'email', 'id', 'username', 'first_name', 'last_name',
-            'is_subscribed',
-        )
+            'is_subscribed', 'password',
+        ]
+        extra_kwargs = {}
+        for field in fields:
+            extra_kwargs[field] = {'required': True}
 
     def get_is_subscribed(self, obj):
-        request = self.context.get('request')
-        if request.user.is_authenticated:
-            return request.user.following.filter(author=obj).exists()
-        return False
+        user = self.context.get('request').user
+        if not user.is_authenticated:
+            return False
+        follow = user.follows.filter(author=obj)
+        return follow.exists()
 
+    def validate_password(self, password):
+        validate_password(password)
+        return password
 
-class AbstractUserCreateSerializer(UserCreateSerializer):
-
-    class Meta(UserCreateSerializer.Meta):
-        model = User
-        fields = (
-            'email', 'id', 'username', 'first_name', 'last_name', 'password',
-        )
+    def create(self, validated_data):
+        password = validated_data.pop('password')
+        user: User = super().create(validated_data)
+        try:
+            user.set_password(password)
+            user.save()
+            return user
+        except serializers.ValidationError as exc:
+            user.delete()
+            raise exc
 
 
 class TagSerializer(serializers.ModelSerializer):
@@ -236,7 +247,7 @@ class ShoppingCartSerializer(serializers.ModelSerializer):
         )
 
 
-class SubscriptionSerializer(AbstractUserCreateSerializer):
+class SubscriptionSerializer(AbstractUserSerializer):
     recipes = serializers.SerializerMethodField()
     recipes_count = serializers.SerializerMethodField()
 
