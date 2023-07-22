@@ -1,11 +1,11 @@
-from rest_framework import serializers
+from django.contrib.auth.password_validation import validate_password
+from djoser.serializers import UserSerializer
+from drf_extra_fields.fields import Base64ImageField
 from recipes.models import (Favorite, Ingredient, Recipe, RecipeIngredient,
                             ShoppingCart, Subscription, Tag)
-from drf_extra_fields.fields import Base64ImageField
-from users.models import User
-from djoser.serializers import UserSerializer
+from rest_framework import serializers
 from rest_framework.validators import UniqueTogetherValidator
-from django.contrib.auth.password_validation import validate_password
+from users.models import User
 
 
 class AbstractUserSerializer(serializers.ModelSerializer):

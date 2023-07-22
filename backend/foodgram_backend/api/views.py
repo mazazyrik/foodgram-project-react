@@ -1,28 +1,22 @@
-from rest_framework import viewsets
-from recipes.models import Tag, Ingredient, Recipe, ShoppingCart
-from .serializers import (
-    TagSerializer,
-    IngredientSerializer,
-    RecipeSerializer,
-    ShoppingCartSerializer,
-    AbstractUserSerializer,
-    ChangePasswordSerializer,
-    AuthorSerializer,
-    SubscribeSerializer,
-)
-from django_filters import rest_framework as filters
-from .filters import IngredientFilter, RecipeFilter
 from api.permissions import IsAdminModeratorOwnerOrReadOnly
 from django.db.models import Sum
 from django.http import HttpResponse
-from rest_framework.permissions import IsAuthenticated, AllowAny
-from django.template import loader
-from pdfkit import from_string
-from rest_framework.decorators import action
-from users.models import User
-from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
-from rest_framework import mixins
+from django.template import loader
+from django_filters import rest_framework as filters
+from pdfkit import from_string
+from recipes.models import Ingredient, Recipe, ShoppingCart, Tag
+from rest_framework import mixins, viewsets
+from rest_framework.decorators import action
+from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.response import Response
+from users.models import User
+
+from .filters import IngredientFilter, RecipeFilter
+from .serializers import (AbstractUserSerializer, AuthorSerializer,
+                          ChangePasswordSerializer, IngredientSerializer,
+                          RecipeSerializer, ShoppingCartSerializer,
+                          SubscribeSerializer, TagSerializer)
 
 
 class CustomGetViewSet(
