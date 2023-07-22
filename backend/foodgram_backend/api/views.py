@@ -33,7 +33,7 @@ class CustomGetViewSet(
     pass
 
 
-class UsersViewSet(CustomGetViewSet, mixins.CreateModelMixin):
+class UsersViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = AbstractUserSerializer
     permission_classes = [AllowAny, ]
