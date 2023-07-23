@@ -31,6 +31,7 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'djoser',
     'colorfield',
+    'drf_spectacular',
 ]
 
 MIDDLEWARE = [
@@ -143,6 +144,13 @@ REST_FRAMEWORK = {
     ),
 
     'PAGE_SIZE': 6,
+    'DEFAULT_SCHEMA_CLASS': (
+        'drf_spectacular.openapi.AutoSchema'
+    )
+}
+
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'Foodgram'
 }
 
 DJOSER = {
