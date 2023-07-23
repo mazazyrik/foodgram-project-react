@@ -8,11 +8,10 @@ from recipes.models import Ingredient, Recipe, ShoppingCart, Tag
 from rest_framework import mixins, viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
+from users.serializers import CartSerializer
 
 from .filters import IngredientFilter, RecipeFilter
-from .serializers import (IngredientSerializer, RecipeSerializer,
-                          TagSerializer)
-from users.serializers import CartSerializer
+from .serializers import IngredientSerializer, RecipeSerializer, TagSerializer
 
 
 class CustomGetViewSet(
