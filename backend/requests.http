@@ -71,7 +71,7 @@ POST http://127.0.0.1/api/users/
 Content-Type: application/json
 
 {
-  "email": "komarovdemian@yandex.ru",
+  "email": "kdemian@yandex.ru",
   "username": "demianight",
   "first_name": "demian",
   "last_name": "komarov",
