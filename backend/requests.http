@@ -1,4 +1,4 @@
-POST http://127.0.0.1:8000/api/recipes/
+POST http://127.0.0.1/api/recipes/
 Content-Type: application/json
 Authorization: Token 211af927869d06630d8967057ccf8cbf0321f77b 
 
@@ -19,7 +19,7 @@ Authorization: Token 211af927869d06630d8967057ccf8cbf0321f77b
 }
 
 ### Error due to ingr duplicates
-POST http://127.0.0.1:8000/api/recipes/
+POST http://127.0.0.1/api/recipes/
 Content-Type: application/json
 Authorization: Token 211af927869d06630d8967057ccf8cbf0321f77b 
 
@@ -44,7 +44,7 @@ Authorization: Token 211af927869d06630d8967057ccf8cbf0321f77b
 }
 
 ###
-PATCH  http://127.0.0.1:8000/api/recipes/1/
+PATCH  http://127.0.0.1/api/recipes/1/
 Content-Type: application/json
 Authorization: Token 211af927869d06630d8967057ccf8cbf0321f77b 
 
@@ -67,7 +67,7 @@ Authorization: Token 211af927869d06630d8967057ccf8cbf0321f77b
 }
 
 ###
-POST http://127.0.0.1:8000/api/users/
+POST http://127.0.0.1/api/users/
 Content-Type: application/json
 
 {
@@ -79,7 +79,7 @@ Content-Type: application/json
 }
 
 ###
-POST http://127.0.0.1:8000/api/auth/token/login/
+POST http://127.0.0.1/api/auth/token/login/
 Content-Type: application/json
 
 {
@@ -88,61 +88,61 @@ Content-Type: application/json
 }
 
 ###
-GET http://127.0.0.1:8000/api/recipes/
+GET http://127.0.0.1/api/recipes/
 
 ###
-GET http://127.0.0.1:8000/api/recipes/?page=1&limit=6
+GET http://127.0.0.1/api/recipes/?page=1&limit=6
 
 ###
-GET http://127.0.0.1:8000/api/recipes/?page=2&limit=6
+GET http://127.0.0.1/api/recipes/?page=2&limit=6
 
 ###
-GET http://127.0.0.1:8000/api/recipes/?page=1&limit=6
+GET http://127.0.0.1/api/recipes/?page=1&limit=6
 Authorization: Token 211af927869d06630d8967057ccf8cbf0321f77b 
 
 ###
-GET http://127.0.0.1:8000/api/recipes/?author=1
+GET http://127.0.0.1/api/recipes/?author=1
 Authorization: Token 211af927869d06630d8967057ccf8cbf0321f77b 
 
 ###
-GET http://127.0.0.1:8000/api/recipes/1/
+GET http://127.0.0.1/api/recipes/1/
 
 ###
-POST http://127.0.0.1:8000/api/recipes/1/favorite/
+POST http://127.0.0.1/api/recipes/1/favorite/
 Authorization: Token 211af927869d06630d8967057ccf8cbf0321f77b 
 
 ###
-DELETE http://127.0.0.1:8000/api/recipes/1/favorite/
+DELETE http://127.0.0.1/api/recipes/1/favorite/
 Authorization: Token 211af927869d06630d8967057ccf8cbf0321f77b 
 
 ###
-POST http://127.0.0.1:8000/api/recipes/1/shopping_cart/
+POST http://127.0.0.1/api/recipes/1/shopping_cart/
 Authorization: Token 211af927869d06630d8967057ccf8cbf0321f77b 
 
 
 ###
-DELETE http://127.0.0.1:8000/api/recipes/1/shopping_cart/
+DELETE http://127.0.0.1/api/recipes/1/shopping_cart/
 Authorization: Token 211af927869d06630d8967057ccf8cbf0321f77b 
 
 ###
-GET http://127.0.0.1:8000/api/users/
+GET http://127.0.0.1/api/users/
 Authorization: Token 211af927869d06630d8967057ccf8cbf0321f77b 
 
 ###
-GET http://127.0.0.1:8000/api/users/1/
+GET http://127.0.0.1/api/users/1/
 Authorization: Token 211af927869d06630d8967057ccf8cbf0321f77b 
 
 ###
-GET http://127.0.0.1:8000/api/users/1/
+GET http://127.0.0.1/api/users/1/
 
 ###
-GET http://127.0.0.1:8000/api/tags/
+GET http://127.0.0.1/api/tags/
 
 ###
-GET http://127.0.0.1:8000/api/tags/1/
+GET http://127.0.0.1/api/tags/1/
 
 ###
-POST http://127.0.0.1:8000/api/users/set_password/
+POST http://127.0.0.1/api/users/set_password/
 Authorization: Token 211af927869d06630d8967057ccf8cbf0321f77b 
 Content-Type: application/json
 
@@ -152,47 +152,47 @@ Content-Type: application/json
 }
 
 ### Subscribe on yourself (error)
-POST http://127.0.0.1:8000/api/users/1/subscribe/
+POST http://127.0.0.1/api/users/1/subscribe/
 Authorization: Token 211af927869d06630d8967057ccf8cbf0321f77b
 
 ###
-POST http://127.0.0.1:8000/api/users/2/subscribe/
+POST http://127.0.0.1/api/users/2/subscribe/
 Authorization: Token 211af927869d06630d8967057ccf8cbf0321f77b 
 
 ###
-DELETE http://127.0.0.1:8000/api/users/2/subscribe/
+DELETE http://127.0.0.1/api/users/2/subscribe/
 Authorization: Token 211af927869d06630d8967057ccf8cbf0321f77b 
 
 ###
-GET http://127.0.0.1:8000/api/users/subscriptions/
+GET http://127.0.0.1/api/users/subscriptions/
 Authorization: Token 211af927869d06630d8967057ccf8cbf0321f77b 
 
 ###
-GET http://127.0.0.1:8000/api/users/?limit=1
+GET http://127.0.0.1/api/users/?limit=1
 
 ###
-GET http://127.0.0.1:8000/api/users/me/
+GET http://127.0.0.1/api/users/me/
 Authorization: Token 211af927869d06630d8967057ccf8cbf0321f77b 
 
 ###
-GET http://127.0.0.1:8000/api/recipes/?is_in_favorite=1
+GET http://127.0.0.1/api/recipes/?is_in_favorite=1
 Authorization: Token 211af927869d06630d8967057ccf8cbf0321f77b 
 
 ###
-GET http://127.0.0.1:8000/api/recipes/?is_in_shopping_cart=1
+GET http://127.0.0.1/api/recipes/?is_in_shopping_cart=1
 Authorization: Token 211af927869d06630d8967057ccf8cbf0321f77b 
 
 ###
-GET http://127.0.0.1:8000/api/ingredients/?name=пше
+GET http://127.0.0.1/api/ingredients/?name=пше
 Authorization: Token 211af927869d06630d8967057ccf8cbf0321f77b 
 
 ###
-GET http://127.0.0.1:8000/api/recipes/download_shopping_cart/
+GET http://127.0.0.1/api/recipes/download_shopping_cart/
 Authorization: Token 211af927869d06630d8967057ccf8cbf0321f77b 
 
 
 ###
-POST http://127.0.0.1:8000/api/recipes/
+POST http://127.0.0.1/api/recipes/
 Authorization: Token 211af927869d06630d8967057ccf8cbf0321f77b 
 Content-Type: application/json
 
