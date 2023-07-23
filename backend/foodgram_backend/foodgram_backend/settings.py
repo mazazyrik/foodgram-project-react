@@ -3,11 +3,19 @@ from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-DEBUG = True
-
 SECRET_KEY = 'django-insecure-x(&5e%751*^(ckk!(!hhmnt@jd1^-#!4c0y-ro$4j=k_vk!o6h'
 
-ALLOWED_HOSTS = []
+CSRF_TRUSTED_ORIGINS = [
+    'http://localhost',
+    'http://127.0.0.1'
+]
+
+DEBUG = False
+
+ALLOWED_HOSTS = [
+    '127.0.0.1',
+    'http://localhost',
+]
 
 INSTALLED_APPS = [
     'django.contrib.admin',

@@ -2,7 +2,7 @@ from django.contrib.auth.password_validation import validate_password
 from djoser.serializers import UserSerializer
 from drf_extra_fields.fields import Base64ImageField
 from recipes.models import (Favorite, Ingredient, Recipe, RecipeIngredient,
-                            ShoppingCart, Subscription, Tag)
+                            Subscription, Tag)
 from rest_framework import serializers
 from rest_framework.validators import UniqueTogetherValidator
 from users.models import User
@@ -215,36 +215,6 @@ class AuthorSerializer(UserSerializer):
         recipes_count = self.context.get('recipes_count')
         recipes = obj.recipes.all()[:recipes_count]
         return RecipeSerializer(recipes, many=True).data
-
-
-class ChangePasswordSerializer(serializers.Serializer):
-    current_password = serializers.CharField(required=True,)
-    new_password = serializers.CharField(required=True,)
-
-    def validate_new_password(self, value):
-        validate_password(value)
-        return value
-
-    def validate_current_password(self, value):
-        user = self.context.get('request').user
-        if not user.check_password(value):
-            raise serializers.ValidationError(
-                'Wrong old password.'
-            )
-
-
-class ShoppingCartSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = ShoppingCart
-        fields = ('user', 'recipe', )
-        validators = (
-            UniqueTogetherValidator(
-                queryset=ShoppingCart.objects.all(),
-                fields=('user', 'recipe'),
-                message='Recipe already exists in your shopping cart.',
-            ),
-        )
 
 
 class SubscriptionSerializer(AbstractUserSerializer):
