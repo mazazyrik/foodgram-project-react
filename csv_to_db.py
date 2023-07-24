@@ -1,7 +1,16 @@
 import csv
 from backend.foodgram_backend.recipes.models import Ingredient
 
-DJANGO_SETTINGS_MODULE = 'backend.foodgram_backend.foodgram_backend'
+# from django.core.management import call_command
+import django
+import os
+os.environ.setdefault(
+    "DJANGO_SETTINGS_MODULE",
+    "backend.foodgram_backend.foodgram_backend.settings"
+)
+
+django.setup()
+
 
 with open('data/ingredients.csv', 'r') as f:
     reader = csv.reader(f)
