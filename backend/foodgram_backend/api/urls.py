@@ -1,4 +1,4 @@
-from api.views import (IngredientViewSet, RecipeViewSet, ShoppingCartViewSet,
+from api.views import (IngredientViewSet, RecipeViewSet,
                        TagViewSet)
 from users.views import UsersViewSet
 from django.urls import include, path
@@ -12,11 +12,5 @@ router.register('recipes', RecipeViewSet, basename='recipes')
 router.register('ingredients', IngredientViewSet, basename='ingredients')
 
 urlpatterns = [
-    path(
-        'recipes/<int:pk>/shopping_cart/', ShoppingCartViewSet.as_view(
-            {'post': 'create', 'delete': 'destroy'}
-        )
-    ),
-
     path('', include(router.urls)),
 ]
