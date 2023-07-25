@@ -11,6 +11,9 @@ from .utils import make_cart_file
 from recipes.models import Ingredient, Recipe, Tag
 from rest_framework import mixins
 from rest_framework.permissions import AllowAny
+from recipes.models import Recipe
+from users.serializers import CartSerializer, SimpleRecipeSerializer
+from django.shortcuts import get_object_or_404
 
 
 class CustomGetViewSet(
@@ -38,7 +41,30 @@ class IngredientViewSet(CustomGetViewSet):
             if name[0] == '%':
                 name = unquote(name)
             name = name.lower()
-        return list(queryset.filter(name__istartswith=name))
+        return queryset.filter(name__istartswith=name)
+
+
+class Cart:
+    def __init__(self, pk, request, cart_name) -> None:
+        self.pk = pk
+        self.request = request
+        self.cart_name = cart_name
+        self.recipe = get_object_or_404(Recipe, id=pk)
+        self.data = {'recipe': self.pk, 'attr': self.cart_name}
+        self.serializer = CartSerializer(
+            data=self.data,
+            context={'request': self.request}
+        )
+        self.serializer.is_valid(raise_exception=True)
+
+    def add(self):
+        self.serializer.save()
+        recipe_sr = SimpleRecipeSerializer(self.recipe)
+        return Response(recipe_sr.data, status=201)
+
+    def remove(self):
+        self.serializer.destroy(self.recipe)
+        return Response(status=204)
 
 
 class RecipeViewSet(viewsets.ModelViewSet):
