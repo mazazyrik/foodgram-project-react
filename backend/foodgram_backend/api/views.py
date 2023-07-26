@@ -1,19 +1,17 @@
 from urllib.parse import unquote
 
-from rest_framework import viewsets
+from django.shortcuts import get_object_or_404
+from recipes.models import Ingredient, Recipe, Tag
+from rest_framework import mixins, viewsets
 from rest_framework.decorators import action
+from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
+from users.serializers import CartSerializer, SimpleRecipeSerializer
 
 from .pagination import CustomPagination
 from .serializers import (IngredientSerializer, RecipeEditCreateSerializer,
                           RecipeSerializer, TagSerializer)
 from .utils import make_cart_file
-from recipes.models import Ingredient, Recipe, Tag
-from rest_framework import mixins
-from rest_framework.permissions import AllowAny
-from recipes.models import Recipe
-from users.serializers import CartSerializer, SimpleRecipeSerializer
-from django.shortcuts import get_object_or_404
 
 
 class CustomGetViewSet(

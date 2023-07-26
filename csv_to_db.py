@@ -1,9 +1,11 @@
 import csv
-from backend.foodgram_backend.recipes.models import Ingredient
+import os
 
 # from django.core.management import call_command
 import django
-import os
+
+from backend.foodgram_backend.recipes.models import Ingredient
+
 os.environ.setdefault(
     "DJANGO_SETTINGS_MODULE",
     "backend.foodgram_backend.foodgram_backend.settings"
