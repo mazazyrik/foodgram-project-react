@@ -14,6 +14,11 @@ Good luck!
 - Docker
 - Postgres
 
+# Where can you check
+
+http://62.84.120.186/
+
+
 
 # How to run project locally
 
