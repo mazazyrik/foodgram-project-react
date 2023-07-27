@@ -17,9 +17,7 @@ services:
 
   back:
     container_name: back
-    build:
-      context: ../backend
-      dockerfile: Dockerfile
+    image: mazazyrik/foodgram_backend
     restart: always
     volumes:
       - foodgram_static:/app/static/
