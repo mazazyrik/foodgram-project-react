@@ -5,7 +5,10 @@ from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = os.environ['SECRET_KEY']
+SECRET_KEY = os.getenv(
+    'DJANGO_SECRET_KEY',
+    default='django-insecure-x(&5e%751*^(ckk!(!hhmnt@jd1^-#!4c0y-ro$4j=k_vk!o6h'
+)
 
 CSRF_TRUSTED_ORIGINS = [
     'http://localhost',
