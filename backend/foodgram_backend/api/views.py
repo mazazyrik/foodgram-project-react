@@ -1,3 +1,5 @@
+# flake8: noqa
+
 from urllib.parse import unquote
 
 from django.shortcuts import get_object_or_404

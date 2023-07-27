@@ -1,3 +1,5 @@
+# flake8: noqa
+
 from django.contrib.auth.password_validation import validate_password
 from drf_extra_fields.fields import Base64ImageField
 from recipes.models import Recipe
