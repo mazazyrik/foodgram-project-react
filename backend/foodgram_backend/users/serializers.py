@@ -18,7 +18,6 @@ class SimpleRecipeSerializer(serializers.ModelSerializer):
 
 
 class UserSerializer(serializers.ModelSerializer):
-    # is_subscribed = serializers.SerializerMethodField()
     password = serializers.CharField(write_only=True)
 
     class Meta:
@@ -31,12 +30,6 @@ class UserSerializer(serializers.ModelSerializer):
         for field in fields:
             extra_kwargs[field] = {'required': True}
 
-    # def get_is_subscribed(self, obj):
-    #     user = self.context.get('request').user
-    #     if not user.is_authenticated:
-    #         return False
-    #     follow = user.follower.filter(author=obj)
-    #     return follow.exists()
 
     def validate_password(self, password):
         validate_password(password)

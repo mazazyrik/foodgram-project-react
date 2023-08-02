@@ -10,6 +10,7 @@ from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from users.serializers import CartSerializer, SimpleRecipeSerializer
 
+from .filters import IngredientFilter
 from .pagination import CustomPagination
 from .serializers import (IngredientSerializer, RecipeEditCreateSerializer,
                           RecipeSerializer, TagSerializer)
@@ -32,16 +33,8 @@ class TagViewSet(CustomGetViewSet):
 class IngredientViewSet(CustomGetViewSet):
     queryset = Ingredient.objects.all()
     serializer_class = IngredientSerializer
-
-    def get_queryset(self):
-        queryset = self.queryset
-        name = self.request.query_params.get('name')
-
-        if name:
-            if name[0] == '%':
-                name = unquote(name)
-            name = name.lower()
-        return queryset.filter(name__istartswith=name)
+    filter_backends = IngredientFilter
+    pagination_class = CustomPagination
 
 
 class Cart:

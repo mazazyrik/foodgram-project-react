@@ -14,7 +14,7 @@ class RecipeFilter(filters.FilterSet):
         fields = ['author', 'tags']
 
     @property
-    def qs(self):
+    def get_queryset(self):
         queryset = super().qs
         user = self.request.user
 

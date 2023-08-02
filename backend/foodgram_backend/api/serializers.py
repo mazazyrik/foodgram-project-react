@@ -21,10 +21,17 @@ class IngrediendAmountSerializer(serializers.ModelSerializer):
     measurement_unit = serializers.ReadOnlyField(
         source='ingredient.measurement_unit',
     )
+    amount = serializers.IntegerField(required=True)
 
     class Meta:
         model = IngredientAmount
         fields = ['id', 'name', 'measurement_unit', 'amount']
+
+    def validate_amount(self, amount):
+        if amount < 1:
+            return serializers.ValidationError({
+                'detail': 'Значение должно быть больше 1.'
+            })
 
 
 class IngredientSerializer(serializers.ModelSerializer):
@@ -95,6 +102,7 @@ class RecipeEditCreateSerializer(serializers.ModelSerializer):
     )
     author = UserSerializer(read_only=True)
     image = Base64ImageField()
+    cooking_time = serializers.IntegerField(required=True)
 
     class Meta:
         model = Recipe
@@ -154,3 +162,10 @@ class RecipeEditCreateSerializer(serializers.ModelSerializer):
         return RecipeSerializer(
             instance, context=context
         ).data
+
+    def validate_cooking_time(self, cooking_time):
+        if cooking_time < 1:
+            return serializers.ValidationError({
+                'detail': 'Время готовки не можеть меньше 0'
+            })
+        return cooking_time
