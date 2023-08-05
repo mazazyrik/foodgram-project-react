@@ -1,13 +1,15 @@
 # flake8: noqa
 
+from http import HTTPStatus
 from urllib.parse import unquote
 
 from django.shortcuts import get_object_or_404
-from recipes.models import Ingredient, Recipe, Tag
 from rest_framework import mixins, viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
+
+from recipes.models import Ingredient, Recipe, Tag
 from users.serializers import CartSerializer, SimpleRecipeSerializer
 
 from .filters import IngredientFilter
@@ -53,11 +55,11 @@ class Cart:
     def add(self):
         self.serializer.save()
         recipe_sr = SimpleRecipeSerializer(self.recipe)
-        return Response(recipe_sr.data, status=201)
+        return Response(recipe_sr.data, status=HTTPStatus.CREATED)
 
     def remove(self):
         self.serializer.destroy(self.recipe)
-        return Response(status=204)
+        return Response(status=HTTPStatus.NO_CONTENT)
 
 
 class RecipeViewSet(viewsets.ModelViewSet):
@@ -85,7 +87,6 @@ class RecipeViewSet(viewsets.ModelViewSet):
         if author:
             queryset = queryset.filter(author=author)
 
-        # Only for auth users
         if not self.request.user.is_authenticated:
             return queryset
 
