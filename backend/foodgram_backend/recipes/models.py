@@ -1,5 +1,6 @@
 from colorfield.fields import ColorField
-from django.core.validators import validate_image_file_extension
+from django.core.validators import (RegexValidator,
+                                    validate_image_file_extension)
 from django.db import models
 
 from users.models import User
@@ -14,9 +15,12 @@ class Recipe(models.Model):
         verbose_name='Автор рецепта',
     )
     name = models.CharField(
-        max_length=128,
-        verbose_name='Название рецепта',
+        max_length=100,
+        validators=[RegexValidator(r'^[a-zA-Z0-9_]*[a-zA-Z][a-zA-Z0-9_]*$',
+                    message='Name should contain at least one letter',
+                    code='invalid_name')]
     )
+
     image = models.ImageField(
         upload_to='recipes/',
         verbose_name='Изображение рецепта',
