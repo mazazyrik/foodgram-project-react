@@ -16,9 +16,11 @@ class Recipe(models.Model):
     )
     name = models.CharField(
         max_length=100,
-        validators=[RegexValidator(r'^[a-zA-Z0-9_]*[a-zA-Z][a-zA-Z0-9_]*$',
-                    message='Name should contain at least one letter',
-                    code='invalid_name')]
+        validators=[
+            RegexValidator(r'^[a-zA-Zа-яА-Я ]+$',
+                           'Название рецепта может содержать'
+                           'только буквы и пробелы.')
+        ]
     )
 
     image = models.ImageField(
