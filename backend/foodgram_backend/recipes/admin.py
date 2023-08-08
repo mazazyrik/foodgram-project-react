@@ -1,25 +1,28 @@
 from django.contrib import admin
 
-from .models import Ingredient, IngredientAmount, Recipe, Tag
+from .models import Ingredient, Recipe, Tag
 
 
+@admin.register(Recipe)
 class RecipeAdmin(admin.ModelAdmin):
-    list_filter = ('name', 'tags__name', 'author__username', )
+    list_display = ['name', 'author', 'created', 'number_of_additions']
+    search_fields = ['name', 'author__username', '^tags__name']
+    list_filter = ['author', 'name', 'tags']
+    readonly_fields = ['number_of_additions']
+
+    def number_of_additions(self, obj: Recipe):
+        return obj.shopping_users.all().count()
 
 
-class TagAdmin(admin.ModelAdmin):
-    pass
-
-
+@admin.register(Ingredient)
 class IngredientAdmin(admin.ModelAdmin):
-    list_filter = ('name', )
+    list_display = ['id', 'name', 'measure']
+    search_fields = ['name', 'measure']
+    list_filter = ['name', ]
 
 
-class IngredientAmountAdmin(admin.ModelAdmin):
-    pass
-
-
-admin.site.register(Recipe, RecipeAdmin)
-admin.site.register(Tag, TagAdmin)
-admin.site.register(Ingredient, IngredientAdmin)
-admin.site.register(IngredientAmount, IngredientAmountAdmin)
+@admin.register(Tag)
+class TagAdmin(admin.ModelAdmin):
+    list_display = ['name', 'color', 'slug']
+    search_fields = ['name', 'colow', 'slug']
+    list_filter = ['name', 'color', 'slug']
