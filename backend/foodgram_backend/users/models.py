@@ -1,8 +1,6 @@
 from django.contrib.auth.models import AbstractUser
-from django.core.exceptions import ValidationError
 from django.db import models
-from django.db.models.signals import pre_save
-from django.dispatch import receiver
+from recipes.models import Recipe
 
 
 class User(AbstractUser):
@@ -48,7 +46,88 @@ class Follow(models.Model):
         verbose_name_plural = 'Подписка'
 
 
-@receiver(pre_save, sender=Follow)
-def check_self_following(sender, instance, **kwargs):
-    if instance.follower == instance.user:
-        raise ValidationError('You can not follow yourself')
+class Favorites(models.Model):
+
+    recipe = models.ForeignKey(
+        verbose_name="Понравившиеся рецепты",
+        related_name="in_favorites",
+        to=Recipe,
+        on_delete=models.CASCADE,
+    )
+    user = models.ForeignKey(
+        verbose_name="Пользователь",
+        related_name="favorites",
+        to=User,
+        on_delete=models.CASCADE,
+    )
+
+    class Meta:
+        verbose_name = "Избранный рецепт"
+        verbose_name_plural = "Избранные рецепты"
+        constraints = (
+            models.UniqueConstraint(
+                fields=(
+                    "recipe",
+                    "user",
+                ),
+                name="\n%(app_label)s_%(class)s recipe is favorite alredy\n",
+            ),
+        )
+
+    def __str__(self) -> str:
+        return f"{self.user} -> {self.recipe}"
+
+
+class Carts(models.Model):
+
+    recipe = models.ForeignKey(
+        verbose_name="Рецепты в списке покупок",
+        related_name="in_carts",
+        to=Recipe,
+        on_delete=models.CASCADE,
+    )
+    user = models.ForeignKey(
+        verbose_name="Владелец списка",
+        related_name="carts",
+        to=User,
+        on_delete=models.CASCADE,
+    )
+
+    class Meta:
+        verbose_name = "Рецепт в списке покупок"
+        verbose_name_plural = "Рецепты в списке покупок"
+        constraints = (
+            models.UniqueConstraint(
+                fields=(
+                    "recipe",
+                    "user",
+                ),
+                name="\n%(app_label)s_%(class)s recipe is cart alredy\n",
+            ),
+        )
+
+    def __str__(self) -> str:
+        return f"{self.user} -> {self.recipe}"
+
+
+class FavoriteShoppingCart(models.Model):
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        verbose_name='Пользователь',
+
+    )
+    recipe = models.ForeignKey(
+        Recipe,
+        on_delete=models.CASCADE,
+        verbose_name='Рецепт',
+    )
+
+    class Meta:
+        abstract = True
+        constraints = [
+            models.UniqueConstraint(
+                fields=('user', 'recipe'),
+                name='%(app_label)s_%(class)s_unique'
+            )
+        ]

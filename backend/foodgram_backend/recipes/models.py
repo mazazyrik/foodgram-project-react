@@ -1,9 +1,19 @@
 from colorfield.fields import ColorField
+from django.core.exceptions import ValidationError
 from django.core.validators import (RegexValidator,
                                     validate_image_file_extension)
 from django.db import models
-
 from users.models import User
+
+
+def validate_tags(value):
+    if not value.exists():
+        raise ValidationError('At least one tag is required')
+
+
+def validate_ingredients(value):
+    if not value.exists():
+        raise ValidationError('At least one tag is required')
 
 
 class Recipe(models.Model):
@@ -32,12 +42,14 @@ class Recipe(models.Model):
     ingredients = models.ManyToManyField(
         'Ingredient',
         verbose_name='Ингредиенты',
-        related_name='recipes'
+        related_name='recipes',
+        validators=[validate_ingredients]
     )
     tags = models.ManyToManyField(
         'Tag',
         related_name='recipes',
         verbose_name='Теги',
+        validators=[validate_tags]
     )
     cooking_time = models.PositiveSmallIntegerField(
         verbose_name='Время приготовления',
