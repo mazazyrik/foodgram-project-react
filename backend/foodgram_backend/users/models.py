@@ -1,5 +1,7 @@
 from django.contrib.auth.models import AbstractUser
+from django.core.exceptions import ValidationError
 from django.db import models
+
 from recipes.models import Recipe
 
 
@@ -44,6 +46,18 @@ class Follow(models.Model):
         ]
         verbose_name = 'Подписка'
         verbose_name_plural = 'Подписка'
+
+    def clean(self):
+        if self.follower == self.following:
+            raise ValidationError('You cannot follow yourself')
+        if Follow.objects.filter(
+            follower=self.follower, following=self.following
+        ).exists():
+            raise ValidationError('You are already following this user')
+
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        super().save(*args, **kwargs)
 
 
 class Favorites(models.Model):

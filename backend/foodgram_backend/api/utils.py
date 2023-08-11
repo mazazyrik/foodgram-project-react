@@ -1,6 +1,7 @@
 # flake8: noqa
 
 from django.db.models import Sum
+
 from recipes.models import IngredientAmount
 from users.models import User
 

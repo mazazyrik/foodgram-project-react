@@ -1,8 +1,10 @@
 from colorfield.fields import ColorField
 from django.core.exceptions import ValidationError
-from django.core.validators import (RegexValidator,
+from django.core.validators import (MaxValueValidator, MinValueValidator,
+                                    RegexValidator,
                                     validate_image_file_extension)
 from django.db import models
+
 from users.models import User
 
 
@@ -53,6 +55,10 @@ class Recipe(models.Model):
     )
     cooking_time = models.PositiveSmallIntegerField(
         verbose_name='Время приготовления',
+        validators=[
+            MinValueValidator(1),
+            MaxValueValidator(300)
+        ]
     )
     pub_date = models.DateTimeField(
         auto_now_add=True,
@@ -66,6 +72,12 @@ class Recipe(models.Model):
 
     def __str__(self) -> str:
         return self.name
+
+    def clean(self):
+        if not self.name.isalnum():
+            raise ValidationError(
+                'Название рецепта должно содержать только буквы и цифры'
+            )
 
 
 class Tag(models.Model):
@@ -120,6 +132,7 @@ class IngredientAmount(models.Model):
     amount = models.PositiveSmallIntegerField(
         null=True,
         blank=True,
+        validators=[MaxValueValidator(20)]
     )
 
     class Meta:
