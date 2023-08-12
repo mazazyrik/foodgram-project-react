@@ -159,6 +159,13 @@ class CreateRecipeSerializer(serializers.ModelSerializer):
                     'Указанного тега не существует')
         return tags
 
+    def validate_name(self, value):
+        if not value.isalnum():
+            raise serializers.ValidationError(
+                'Название рецепта должно содержать только буквы и цифры'
+            )
+        return value
+
     def validate_cooking_time(self, cooking_time):
         if cooking_time < 1:
             raise serializers.ValidationError(
