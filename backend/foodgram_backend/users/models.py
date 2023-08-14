@@ -26,8 +26,6 @@ class User(AbstractUser):
         verbose_name = 'user'
         verbose_name_plural = 'users'
         ordering = ('pk', )
-
-    class Meta:
         verbose_name = 'Пользователь'
         verbose_name_plural = 'Пользователи'
 
