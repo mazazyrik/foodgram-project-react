@@ -8,16 +8,6 @@ from django.db import models
 from users.models import User
 
 
-def validate_tags(value):
-    if not value.exists():
-        raise ValidationError('At least one tag is required')
-
-
-def validate_ingredients(value):
-    if not value.exists():
-        raise ValidationError('At least one tag is required')
-
-
 class Recipe(models.Model):
     author = models.ForeignKey(
         User,
@@ -45,13 +35,11 @@ class Recipe(models.Model):
         'Ingredient',
         verbose_name='Ингредиенты',
         related_name='recipes',
-        validators=[validate_ingredients]
     )
     tags = models.ManyToManyField(
         'Tag',
         related_name='recipes',
         verbose_name='Теги',
-        validators=[validate_tags]
     )
     cooking_time = models.PositiveSmallIntegerField(
         verbose_name='Время приготовления',
@@ -66,7 +54,7 @@ class Recipe(models.Model):
     )
 
     class Meta:
-        ordering = ('-pub_date')
+        ordering = ['-pub_date']
         verbose_name = 'Рецепт'
         verbose_name_plural = 'Рецепт'
 
@@ -147,3 +135,90 @@ class IngredientAmount(models.Model):
 
     def __str__(self):
         return f'{self.recipe.name}, {self.ingredient.name}: {self.amount}'
+
+
+class Favorites(models.Model):
+
+    recipe = models.ForeignKey(
+        verbose_name="Понравившиеся рецепты",
+        related_name="in_favorites",
+        to=Recipe,
+        on_delete=models.CASCADE,
+    )
+    user = models.ForeignKey(
+        verbose_name="Пользователь",
+        related_name="favorites",
+        to=User,
+        on_delete=models.CASCADE,
+    )
+
+    class Meta:
+        verbose_name = "Избранный рецепт"
+        verbose_name_plural = "Избранные рецепты"
+        constraints = (
+            models.UniqueConstraint(
+                fields=(
+                    "recipe",
+                    "user",
+                ),
+                name="\n%(app_label)s_%(class)s recipe is favorite alredy\n",
+            ),
+        )
+
+    def __str__(self) -> str:
+        return f"{self.user} -> {self.recipe}"
+
+
+class Carts(models.Model):
+
+    recipe = models.ForeignKey(
+        verbose_name="Рецепты в списке покупок",
+        related_name="in_carts",
+        to=Recipe,
+        on_delete=models.CASCADE,
+    )
+    user = models.ForeignKey(
+        verbose_name="Владелец списка",
+        related_name="carts",
+        to=User,
+        on_delete=models.CASCADE,
+    )
+
+    class Meta:
+        verbose_name = "Рецепт в списке покупок"
+        verbose_name_plural = "Рецепты в списке покупок"
+        constraints = (
+            models.UniqueConstraint(
+                fields=(
+                    "recipe",
+                    "user",
+                ),
+                name="\n%(app_label)s_%(class)s recipe is cart alredy\n",
+            ),
+        )
+
+    def __str__(self) -> str:
+        return f"{self.user} -> {self.recipe}"
+
+
+class FavoriteShoppingCart(models.Model):
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        verbose_name='Пользователь',
+
+    )
+    recipe = models.ForeignKey(
+        Recipe,
+        on_delete=models.CASCADE,
+        verbose_name='Рецепт',
+    )
+
+    class Meta:
+        abstract = True
+        constraints = [
+            models.UniqueConstraint(
+                fields=('user', 'recipe'),
+                name='%(app_label)s_%(class)s_unique'
+            )
+        ]

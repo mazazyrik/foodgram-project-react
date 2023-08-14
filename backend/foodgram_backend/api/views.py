@@ -16,8 +16,9 @@ from .serializers import (CreateRecipeSerializer, FavoriteSerializer,
                           IngredientSerializer, RecipeReadSerializer,
                           ShoppingCartSerializer, SubscribeListSerializer,
                           TagSerializer, UserSerializer)
-from recipes.models import Ingredient, IngredientAmount, Recipe, Tag
-from users.models import Carts, Favorites, Follow, User
+from recipes.models import (Carts, Favorites, Ingredient, IngredientAmount,
+                            Recipe, Tag)
+from users.models import Follow, User
 
 
 class IngredientViewSet(viewsets.ReadOnlyModelViewSet):

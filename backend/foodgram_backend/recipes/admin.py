@@ -5,10 +5,9 @@ from .models import Ingredient, Recipe, Tag
 
 @admin.register(Recipe)
 class RecipeAdmin(admin.ModelAdmin):
-    list_display = ['name', 'author', 'created', 'number_of_additions']
-    search_fields = ['name', 'author__username', '^tags__name']
+    list_display = ['name', 'author', 'pub_date']
+    search_fields = ['name', 'author']
     list_filter = ['author', 'name', 'tags']
-    readonly_fields = ['number_of_additions']
 
     def number_of_additions(self, obj: Recipe):
         return obj.shopping_users.all().count()
@@ -16,8 +15,8 @@ class RecipeAdmin(admin.ModelAdmin):
 
 @admin.register(Ingredient)
 class IngredientAdmin(admin.ModelAdmin):
-    list_display = ['id', 'name', 'measure']
-    search_fields = ['name', 'measure']
+    list_display = ['id', 'name', ]
+    search_fields = ['name', 'measure_unit']
     list_filter = ['name', ]
 
 

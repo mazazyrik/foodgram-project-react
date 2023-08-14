@@ -1,3 +1,5 @@
+import re
+
 from django.shortcuts import get_object_or_404
 from djoser.serializers import UserCreateSerializer, UserSerializer
 from drf_extra_fields.fields import Base64ImageField
@@ -5,8 +7,9 @@ from rest_framework import serializers, status
 from rest_framework.exceptions import ValidationError
 from rest_framework.fields import SerializerMethodField
 
-from recipes.models import Ingredient, IngredientAmount, Recipe, Tag
-from users.models import Carts, Favorites, User
+from recipes.models import (Carts, Favorites, Ingredient, IngredientAmount,
+                            Recipe, Tag)
+from users.models import User
 
 
 class UserSerializer(UserSerializer):
@@ -159,12 +162,12 @@ class CreateRecipeSerializer(serializers.ModelSerializer):
                     'Указанного тега не существует')
         return tags
 
-    def validate_name(self, value):
-        if not value.isalnum():
+    def validate_name(self, name):
+        if not re.search('[a-zA-Z]', name):
             raise serializers.ValidationError(
-                'Название рецепта должно содержать только буквы и цифры'
+                "Поле 'name' должно содержать хотя бы одну букву."
             )
-        return value
+        return name
 
     def validate_cooking_time(self, cooking_time):
         if cooking_time < 1:
