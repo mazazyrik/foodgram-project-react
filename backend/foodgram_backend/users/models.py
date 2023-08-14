@@ -7,38 +7,9 @@ class User(AbstractUser):
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['username', 'first_name', 'last_name']
 
-    email = models.EmailField(
-        verbose_name='Электронная почта',
-        max_length=254,
-        unique=True,
-        blank=False,
-        null=False,
-    )
-    username = models.CharField(
-        verbose_name='Имя пользователя',
-        max_length=150,
-        unique=True,
-        blank=False,
-        null=False,
-    )
-    first_name = models.CharField(
-        verbose_name='Имя',
-        max_length=150,
-        blank=False,
-        null=False,
-    )
-    last_name = models.CharField(
-        verbose_name='Фамилия',
-        max_length=150,
-        blank=False,
-        null=False
-    )
-    password = models.CharField(
-        verbose_name='Пароль',
-        max_length=150,
-        blank=False,
-        null=False,
-    )
+    email = models.EmailField(unique=True, verbose_name='email')
+    first_name = models.CharField(max_length=150, verbose_name='first name')
+    last_name = models.CharField(max_length=150, verbose_name='last name')
     shopping_cart = models.ManyToManyField(
         'recipes.Recipe',
         related_name='users',
@@ -50,6 +21,11 @@ class User(AbstractUser):
         blank=True,
         verbose_name='Лист избранного',
     )
+
+    class Meta:
+        verbose_name = 'user'
+        verbose_name_plural = 'users'
+        ordering = ('pk', )
 
     class Meta:
         verbose_name = 'Пользователь'

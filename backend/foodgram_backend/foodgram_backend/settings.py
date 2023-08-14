@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'djoser',
     'colorfield',
     'drf_spectacular',
+    'django_filters',
 ]
 
 MIDDLEWARE = [
@@ -127,10 +128,6 @@ REST_FRAMEWORK = {
 
     'DEFAULT_PERMISSION_CLASSES': (
         'rest_framework.permissions.IsAuthenticatedOrReadOnly',
-    ),
-
-    'DEFAULT_PAGINATION_CLASS': (
-        'api.pagination.CustomPagination'
     ),
 
     'DEFAULT_SCHEMA_CLASS': (

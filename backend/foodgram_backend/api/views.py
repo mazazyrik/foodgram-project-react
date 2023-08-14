@@ -1,17 +1,16 @@
 from django.db.models import Sum
-from django.http.response import HttpResponse
 from django.shortcuts import get_object_or_404
-# from django_filters.rest_framework import DjangoFilterBackend
 from djoser.views import UserViewSet
 from rest_framework import status, viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import (IsAuthenticated,
                                         IsAuthenticatedOrReadOnly)
 from rest_framework.response import Response
+from .mixins import AbstractGETViewSet
+from urllib.parse import unquote
+from rest_framework.permissions import AllowAny
 
-from .filters import IngredientFilter, RecipeFilter
 from .pagination import CustomPagination
-from .permissions import IsAdminModeratorOwnerOrReadOnly
 from .serializers import (CreateRecipeSerializer, FavoriteSerializer,
                           IngredientSerializer, RecipeReadSerializer,
                           ShoppingCartSerializer, SubscribeListSerializer,
@@ -21,13 +20,19 @@ from recipes.models import (Carts, Favorites, Ingredient, IngredientAmount,
 from users.models import Follow, User
 
 
-class IngredientViewSet(viewsets.ReadOnlyModelViewSet):
-    serializer_class = IngredientSerializer
+class IngredientViewSet(AbstractGETViewSet):
     queryset = Ingredient.objects.all()
-    permission_classes = (IsAuthenticatedOrReadOnly, )
-    filter_backends = (IngredientFilter, )
-    search_fields = ('^name', )
-    pagination_class = None
+    serializer_class = IngredientSerializer
+
+    def get_queryset(self):
+        queryset = self.queryset
+        name = self.request.query_params.get('name')
+
+        if name:
+            if name[0] == '%':
+                name = unquote(name)
+            name = name.lower()
+        return list(queryset.filter(name__istartswith=name))
 
 
 class TagViewSet(viewsets.ModelViewSet):
@@ -39,29 +44,13 @@ class TagViewSet(viewsets.ModelViewSet):
 
 class RecipeViewSet(viewsets.ModelViewSet):
     queryset = Recipe.objects.all()
-    serializer_class = CreateRecipeSerializer
-    permission_classes = (IsAdminModeratorOwnerOrReadOnly, )
-    pagination_class = CustomPagination
-    # filter_backends = (DjangoFilterBackend, )
-    filterset_class = RecipeFilter
+    # pagination_class = CustomPagination
+    permission_classes = [AllowAny, ]
 
     def get_serializer_class(self):
         if self.request.method == 'GET':
             return RecipeReadSerializer
         return CreateRecipeSerializer
-
-    @staticmethod
-    def send_message(ingredients):
-        shopping_list = 'Купить в магазине:'
-        for ingredient in ingredients:
-            shopping_list += (
-                f"\n{ingredient['ingredient__name']} "
-                f"({ingredient['ingredient__measurement_unit']}) - "
-                f"{ingredient['amount']}")
-        file = 'shopping_list.txt'
-        response = HttpResponse(shopping_list, content_type='text/plain')
-        response['Content-Disposition'] = f'attachment; filename="{file}.txt"'
-        return response
 
     @action(detail=False, methods=['GET'])
     def download_shopping_cart(self, request):
