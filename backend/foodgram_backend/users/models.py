@@ -4,6 +4,9 @@ from django.db import models
 
 
 class User(AbstractUser):
+    USERNAME_FIELD = 'email'
+    REQUIRED_FIELDS = ['username', 'first_name', 'last_name']
+
     email = models.EmailField(
         verbose_name='Электронная почта',
         max_length=254,
@@ -35,6 +38,17 @@ class User(AbstractUser):
         max_length=150,
         blank=False,
         null=False,
+    )
+    shopping_cart = models.ManyToManyField(
+        'recipes.Recipe',
+        related_name='users',
+        blank=True,
+        verbose_name='Корзина покупок',
+    )
+    favorite = models.ManyToManyField(
+        'recipes.Recipe',
+        blank=True,
+        verbose_name='Лист избранного',
     )
 
     class Meta:

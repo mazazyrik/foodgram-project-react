@@ -75,7 +75,7 @@ Content-Type: application/json
   "username": "demianight",
   "first_name": "demian",
   "last_name": "komarov",
-  "password": "demian197"
+  "password": "bober12345"
 }
 
 ###
@@ -84,7 +84,7 @@ Content-Type: application/json
 
 {
   "email": "komarovdemian@yandex.ru",
-  "password": "demian197"
+  "password": "bober12345"
 }
 
 ###
